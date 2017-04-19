@@ -1,6 +1,6 @@
 package com.cegeka;
 
-import org.ethereum.geth.*;
+import go.geth.Geth;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,20 +14,20 @@ public class GethApplication implements CommandLineRunner {
 
 	@Override
     public void run(String... args) {
-        NodeConfig conf = Geth.newNodeConfig();
-        Context ctx = Geth.newContext();
+        Geth.NodeConfig conf = Geth.NewNodeConfig();
+        Geth.Context ctx = Geth.NewContext();
 
         try {
-            Node node = Geth.newNode("ethereum", conf);
-            node.start();
+            Geth.Node node = Geth.NewNode(".ethereum", conf);
+            node.Start();
 
-            NodeInfo info = node.getNodeInfo();
-            System.out.println("My name: " + info.getName());
-            System.out.println("My address: " + info.getListenerAddress());
-            System.out.println("My protocols: " + info.getProtocols());
+            Geth.NodeInfo info = node.GetNodeInfo();
+            System.out.println("My name: " + info.GetName());
+            System.out.println("My address: " + info.GetListenerAddress());
+            System.out.println("My protocols: " + info.GetProtocols());
 
-            EthereumClient client = node.getEthereumClient();
-            System.out.println("Latest block: " + client.getBlockByNumber(ctx, -1));
+            Geth.EthereumClient client = node.GetEthereumClient();
+            System.out.println("Latest block: " + client.GetBlockByNumber(ctx, -1));
         } catch (Exception ex) {
             System.out.println("Crashed: " + ex.getMessage());
         }
