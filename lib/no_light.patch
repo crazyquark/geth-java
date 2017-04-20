@@ -1,0 +1,43 @@
+diff --git a/mobile/geth.go b/mobile/geth.go
+index af0054c..788a9f9 100644
+--- a/mobile/geth.go
++++ b/mobile/geth.go
+@@ -28,7 +28,6 @@ import (
+ 	"github.com/ethereum/go-ethereum/eth"
+ 	"github.com/ethereum/go-ethereum/ethclient"
+ 	"github.com/ethereum/go-ethereum/ethstats"
+-	"github.com/ethereum/go-ethereum/les"
+ 	"github.com/ethereum/go-ethereum/node"
+ 	"github.com/ethereum/go-ethereum/p2p/nat"
+ 	"github.com/ethereum/go-ethereum/params"
+@@ -142,7 +141,7 @@ func NewNode(datadir string, config *NodeConfig) (stack *Node, _ error) {
+ 				EIP158Block:    big.NewInt(config.EthereumChainConfig.EIP158Block),
+ 			},
+ 			Genesis:                 config.EthereumGenesis,
+-			LightMode:               true,
++			FastSync:                true,
+ 			DatabaseCache:           config.EthereumDatabaseCache,
+ 			NetworkId:               config.EthereumNetworkID,
+ 			GasPrice:                new(big.Int).Mul(big.NewInt(20), common.Shannon),
+@@ -154,17 +153,17 @@ func NewNode(datadir string, config *NodeConfig) (stack *Node, _ error) {
+ 			GpobaseCorrectionFactor: 110,
+ 		}
+ 		if err := rawStack.Register(func(ctx *node.ServiceContext) (node.Service, error) {
+-			return les.New(ctx, ethConf)
++			return eth.New(ctx, ethConf)
+ 		}); err != nil {
+ 			return nil, fmt.Errorf("ethereum init: %v", err)
+ 		}
+ 		// If netstats reporting is requested, do it
+ 		if config.EthereumNetStats != "" {
+ 			if err := rawStack.Register(func(ctx *node.ServiceContext) (node.Service, error) {
+-				var lesServ *les.LightEthereum
+-				ctx.Service(&lesServ)
++				var serv *eth.Ethereum
++				ctx.Service(&serv)
+ 
+-				return ethstats.New(config.EthereumNetStats, nil, lesServ)
++				return ethstats.New(config.EthereumNetStats, serv, nil)
+ 			}); err != nil {
+ 				return nil, fmt.Errorf("netstats init: %v", err)
+ 			}

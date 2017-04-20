@@ -15,6 +15,9 @@ public class GethApplication implements CommandLineRunner {
 	@Override
     public void run(String... args) {
         Geth.NodeConfig conf = Geth.NewNodeConfig();
+        conf.setEthereumEnabled(true);
+        conf.setEthereumNetworkID(3);
+
         Geth.Context ctx = Geth.NewContext();
 
         try {
